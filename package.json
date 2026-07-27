@@ -1,0 +1,80 @@
+{
+  "name": "@syrokomskyi/pipeline-steps",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "pnpm exec tsc -p tsconfig.lib.json",
+    "lint": "pnpm exec eslint src --ext .ts",
+    "test": "pnpm exec vitest run",
+    "typecheck": "pnpm exec tsc -p tsconfig.lib.json --noEmit",
+    "upgrade-packages": "pnpm up --latest",
+    "compass:annotate": "code-compass annotate --root .",
+    "compass:migrate": "code-compass migrate --root .",
+    "compass:inventory": "code-compass inventory --root .",
+    "compass:validate": "code-compass validate --root .",
+    "compass": "code-compass validate --root .",
+    "changelog": "changelog-live",
+    "changelog:init": "changelog-live init"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@syrokomskyi/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
+  "dependencies": {
+    "@syrokomskyi/business-core": "workspace:*",
+    "@syrokomskyi/observatory-crypto": "workspace:*",
+    "@syrokomskyi/pipeline-core": "workspace:*",
+    "@syrokomskyi/rate-limit": "workspace:*",
+    "markdown-table": "^3.0.4",
+    "systeminformation": "^5.33.1",
+    "tslib": "^2.8.1"
+  },
+  "peerDependencies": {
+    "axe-core": "*",
+    "chrome-launcher": "*",
+    "lighthouse": "*",
+    "playwright": "*"
+  },
+  "peerDependenciesMeta": {
+    "axe-core": {
+      "optional": true
+    },
+    "chrome-launcher": {
+      "optional": true
+    },
+    "lighthouse": {
+      "optional": true
+    },
+    "playwright": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@syrokomskyi/code-compass": "workspace:*",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/systeminformation": "^3.54.1",
+    "@wgogol/changelog-live": "workspace:*",
+    "axe-core": "^4.12.1",
+    "chrome-launcher": "^1.2.1",
+    "eslint": "~10.7.0",
+    "lighthouse": "^13.4.1",
+    "playwright": "^1.61.1",
+    "typescript": "7.0.2",
+    "typescript-eslint": "^8.65.0",
+    "vitest": "4.1.10"
+  }
+}
