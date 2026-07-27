@@ -1,0 +1,24 @@
+git:
+  repoRoot: "../../.."
+  paths:
+    - packages/pipeline/pipeline-steps
+
+grouping:
+  period: week
+  startDay: thu
+
+languages:
+  primary: en
+  translations: []
+
+ai:
+  generation:
+    provider: openai
+  translation:
+    provider: openai
+
+output:
+  dir: "."
+  filename: CHANGELOG
+
+sortOrder: desc
