@@ -36,8 +36,6 @@
  */
 
 import fsp from "node:fs/promises";
-import { PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
 import {
   loadSigningKeyFromEnv,
   signSource,
@@ -46,31 +44,13 @@ import {
 } from "@syrokomskyi/observatory-crypto";
 import { hashDatabaseFile } from "@syrokomskyi/business-core/cross-db";
 import { SignSourceReporter, type SignSummary } from "./signature-reporters.js";
+import { SignatureStep, type SignatureStepContext } from "./signature-step-base.js";
 
-/** Context shape required by SignSourceStep — must provide factory gogol helpers. */
-export type SignSourceStepContext = PipelineStepContext & {
-  getGogolOutputDir: (id: string) => string;
-  getGogolArtifactPath: (id: string, artifactId: string) => string;
-};
+export type { SignatureStepContext as SignSourceStepContext } from "./signature-step-base.js";
 
 export abstract class SignSourceStep<
-  TContext extends SignSourceStepContext = SignSourceStepContext,
-> extends PipelineStep<TContext> {
-  override getPromptFileNames(): string[] {
-    return [];
-  }
-
-  override getArtifactPath(ctx: TContext, artifactId: string): string {
-    return ctx.getGogolArtifactPath(this.id, artifactId);
-  }
-
-  override async shouldSkip(ctx: TContext): Promise<boolean> {
-    const state = ctx.state as { brief?: { skipGogols?: string[] } };
-    return state.brief?.skipGogols?.includes(this.id) ?? false;
-  }
-  /** App ID string, e.g. "0-harvest-source". */
-  protected abstract getAppId(): string;
-
+  TContext extends SignatureStepContext = SignatureStepContext,
+> extends SignatureStep<TContext> {
   /** Absolute path to the DB file to sign. */
   protected abstract getDbPath(ctx: TContext): string;
 
@@ -78,10 +58,10 @@ export abstract class SignSourceStep<
   protected abstract getSourceToken(ctx: TContext): string;
 
   /** Convert an absolute path to a relative one for artifact output. */
-  protected abstract toRelativePath(p: string): string;
+  protected abstract override toRelativePath(p: string): string;
 
   /** App version string. Default: "0.1.0". */
-  protected getAppVersion(): string {
+  protected override getAppVersion(): string {
     return "0.1.0";
   }
 

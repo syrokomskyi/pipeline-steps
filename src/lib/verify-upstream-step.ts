@@ -40,8 +40,6 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
-import { PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
 import {
   getTransparencyKeysDir,
   listDeviceFolders,
@@ -56,31 +54,13 @@ import {
   type VerificationEntry,
   type VerificationSummary,
 } from "./signature-reporters.js";
+import { SignatureStep, type SignatureStepContext } from "./signature-step-base.js";
 
-/** Context shape required by VerifyUpstreamStep — must provide factory gogol helpers. */
-export type VerifyUpstreamStepContext = PipelineStepContext & {
-  getGogolOutputDir: (id: string) => string;
-  getGogolArtifactPath: (id: string, artifactId: string) => string;
-};
+export type { SignatureStepContext as VerifyUpstreamStepContext } from "./signature-step-base.js";
 
 export abstract class VerifyUpstreamStep<
-  TContext extends VerifyUpstreamStepContext = VerifyUpstreamStepContext,
-> extends PipelineStep<TContext> {
-  override getPromptFileNames(): string[] {
-    return [];
-  }
-
-  override getArtifactPath(ctx: TContext, artifactId: string): string {
-    return ctx.getGogolArtifactPath(this.id, artifactId);
-  }
-
-  override async shouldSkip(ctx: TContext): Promise<boolean> {
-    const state = ctx.state as { brief?: { skipGogols?: string[] } };
-    return state.brief?.skipGogols?.includes(this.id) ?? false;
-  }
-  /** This app's ID, e.g. "1-register-businesses". */
-  protected abstract getAppId(): string;
-
+  TContext extends SignatureStepContext = SignatureStepContext,
+> extends SignatureStep<TContext> {
   /** The upstream app ID to look for in manifests, e.g. "0-harvest-source". */
   protected abstract getExpectedUpstreamAppId(): string;
 
@@ -100,10 +80,10 @@ export abstract class VerifyUpstreamStep<
   protected abstract getSourceToken(ctx: TContext): string;
 
   /** Convert an absolute path to a relative one for artifact output. */
-  protected abstract toRelativePath(p: string): string;
+  protected abstract override toRelativePath(p: string): string;
 
   /** App version string. Default: "0.1.0". */
-  protected getAppVersion(): string {
+  protected override getAppVersion(): string {
     return "0.1.0";
   }
 
