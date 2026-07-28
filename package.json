@@ -24,10 +24,7 @@
       "default": "./dist/index.js"
     }
   },
-  "files": [
-    "dist",
-    "!**/*.tsbuildinfo"
-  ],
+  "files": ["dist", "!**/*.tsbuildinfo"],
   "dependencies": {
     "@syrokomskyi/business-core": "workspace:*",
     "@syrokomskyi/observatory-crypto": "workspace:*",
@@ -60,7 +57,6 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/systeminformation": "^3.54.1",
     "@wgogol/changelog-live": "workspace:*",
     "axe-core": "^4.12.1",
     "chrome-launcher": "^1.2.1",
