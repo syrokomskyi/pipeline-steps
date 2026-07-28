@@ -24,7 +24,10 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist", "!**/*.tsbuildinfo"],
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
   "dependencies": {
     "@syrokomskyi/business-core": "workspace:*",
     "@syrokomskyi/observatory-crypto": "workspace:*",
@@ -62,8 +65,8 @@
     "chrome-launcher": "^1.2.1",
     "eslint": "~10.7.0",
     "lighthouse": "^13.4.1",
-    "playwright": "^1.61.1",
-    "typescript": "7.0.2",
+    "playwright": "^1.62.0",
+    "typescript": "6.0.3",
     "typescript-eslint": "^8.65.0",
     "vitest": "4.1.10"
   }
