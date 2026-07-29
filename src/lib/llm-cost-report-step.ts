@@ -8,6 +8,7 @@
 </MODULE_CONTRACT>
 <CHANGE_SUMMARY>
   <item>Initial implementation — extracted from app-local LlmCostReportGogol in apps/site.</item>
+  <item>Added real OpenRouter pricing for all light-tier and medium-tier models so cost reports reflect actual spend instead of DEFAULT_PRICING fallback.</item>
 </CHANGE_SUMMARY>
 */
 
@@ -31,10 +32,23 @@ type ModelPricing = TokenPricing | PerCallPricing;
 const isPerCallPricing = (p: ModelPricing): p is PerCallPricing => "perCall" in p;
 
 const MODEL_PRICING: Record<string, ModelPricing> = {
+  // OpenAI direct models
   "gpt-5.5": { inputPer1M: 5, outputPer1M: 15 },
   "gpt-5-nano": { inputPer1M: 0.5, outputPer1M: 1.5 },
   "gpt-image-1.5": { perCall: 0.04 },
   "gemini-3.1-flash-image-preview": { perCall: 0.03 },
+  // OpenRouter-routed models (light tier)
+  "openai/gpt-5.6-luna": { inputPer1M: 0.5, outputPer1M: 3.0 },
+  "google/gemini-3.6-flash": { inputPer1M: 1.5, outputPer1M: 7.5 },
+  "perplexity/sonar": { inputPer1M: 1.0, outputPer1M: 1.0 },
+  "z-ai/glm-5.2": { inputPer1M: 0.76, outputPer1M: 2.42 },
+  "tencent/hy3": { inputPer1M: 0.132, outputPer1M: 0.528 },
+  "meituan/longcat-2.0": { inputPer1M: 0.3, outputPer1M: 1.2 },
+  "meta/muse-spark-1.1": { inputPer1M: 1.25, outputPer1M: 4.25 },
+  "xiaomi/mimo-v2.5": { inputPer1M: 0.3, outputPer1M: 1.1 },
+  // OpenRouter-routed models (medium tier)
+  "perplexity/sonar-pro": { inputPer1M: 3.0, outputPer1M: 15.0 },
+  "perplexity/sonar-reasoning-pro": { inputPer1M: 2.0, outputPer1M: 8.0 },
 };
 
 const DEFAULT_PRICING: ModelPricing = { inputPer1M: 1, outputPer1M: 3 };
