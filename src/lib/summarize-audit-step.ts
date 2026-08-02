@@ -48,14 +48,14 @@ const fileExists = async (p: string): Promise<boolean> => {
  * sites, hash DB files, build JSON snapshot, and write JSON + Markdown artifacts.
  *
  * Subclasses provide:
- * - `getAuditsDbPath(year)` — path to the audits DB file
- * - `getAuditsDbName(year)` — name without extension
+ * - `getAuditsDbPath(period)` — path to the audits DB file
+ * - `getAuditsDbName(period)` — name without extension
  * - `openAuditsDb(dbPath)` — opens the DB connection
  * - `queryToolStats(db)` — tool-specific stats (lighthouse averages, axe totals)
  * - `getToolStatsSnapshot(stats)` — stats fields for the JSON snapshot
  * - `formatToolStatsMarkdown(stats)` — markdown section for tool-specific stats
  * - `getRegistryDbPath(ctx)` — path to registry.db for provenance
- * - `getYear(ctx)` — year for the snapshot
+ * - `getPeriod(ctx)` — period for the snapshot
  */
 export abstract class SummarizeAuditStep<
   TContext extends SummarizeAuditStepContext = SummarizeAuditStepContext,
@@ -69,11 +69,11 @@ export abstract class SummarizeAuditStep<
     return path.join(ctx.getGogolOutputDir(this.id), artifactId);
   }
 
-  /** Path to the audits DB file for the given year. */
-  protected abstract getAuditsDbPath(year: number): string;
+  /** Path to the audits DB file for the given immutable period. */
+  protected abstract getAuditsDbPath(period: string): string;
 
-  /** Audits DB name (without .db extension) for the given year. */
-  protected abstract getAuditsDbName(year: number): string;
+  /** Audits DB name (without .db extension) for the given immutable period. */
+  protected abstract getAuditsDbName(period: string): string;
 
   /** Open the audits DB connection. */
   protected abstract openAuditsDb(dbPath: string): import("better-sqlite3").Database;
@@ -90,15 +90,15 @@ export abstract class SummarizeAuditStep<
   /** Path to registry.db for provenance. */
   protected abstract getRegistryDbPath(ctx: TContext): string;
 
-  /** Year for the snapshot. */
-  protected abstract getYear(ctx: TContext): number;
+  /** Period for the snapshot. */
+  protected abstract getPeriod(ctx: TContext): string;
 
   override async run(ctx: TContext): Promise<void> {
-    const year = this.getYear(ctx);
+    const period = this.getPeriod(ctx);
     const registryDbPath = this.getRegistryDbPath(ctx);
 
-    const dbPath = this.getAuditsDbPath(year);
-    const dbName = this.getAuditsDbName(year);
+    const dbPath = this.getAuditsDbPath(period);
+    const dbName = this.getAuditsDbName(period);
     const db = this.openAuditsDb(dbPath);
 
     const byTool = new Map<string, ToolCountStats>();
@@ -143,7 +143,7 @@ export abstract class SummarizeAuditStep<
 
     const snapshot = {
       doneAt,
-      auditYear: year,
+      auditPeriod: period,
       totalSites,
       byTool: Object.fromEntries(byTool),
       ...this.getToolStatsSnapshot(toolStats),
@@ -168,7 +168,7 @@ export abstract class SummarizeAuditStep<
         ``,
         `**Batch:** audit  `,
         ``,
-        `**Audit Year:** ${year}  `,
+        `**Audit period:** ${period}  `,
         `**Total Sites:** ${totalSites}  `,
         `**Completed:** ${doneAt}`,
         ``,
