@@ -127,7 +127,7 @@ describe("LlmCostReportStep — estimation warning", () => {
     const report = await runStepAndGetReport(tmpRoot);
 
     expect(report).toContain("Cost accuracy warning");
-    expect(report).toContain("1 of 2 calls used estimated token counts");
+    expect(report).toContain("1 of 2 calls (50%) used estimated token counts");
     expect(report).toContain("Affected gogols: test-mixed (1)");
   });
 

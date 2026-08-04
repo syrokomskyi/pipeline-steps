@@ -463,6 +463,7 @@ export abstract class LlmCostReportStep<
     const lines: string[] = ["## Insights", ""];
 
     if (estimatedCalls > 0) {
+      const percentage = Math.round((estimatedCalls / totalCalls) * 100);
       const dollarRange = totalCost * 0.15;
       const affectedGogols = new Map<string, number>();
       for (const r of records) {
@@ -474,7 +475,7 @@ export abstract class LlmCostReportStep<
         .map(([id, count]) => `${id} (${count})`)
         .join(", ");
       lines.push(
-        `> ⚠️ **Cost accuracy warning:** ${estimatedCalls} of ${totalCalls} calls used estimated token counts (~4 chars/token).`,
+        `> ⚠️ **Cost accuracy warning:** ${estimatedCalls} of ${totalCalls} calls (${percentage}%) used estimated token counts (~4 chars/token).`,
         `> Actual cost may differ by ±15% (±${formatCurrency(dollarRange)}). Affected gogols: ${gogolList}.`,
         "",
       );
