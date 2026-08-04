@@ -9,6 +9,7 @@
 <CHANGE_SUMMARY>
   <item>Initial implementation — extracted from app-local LlmCostReportGogol in apps/site.</item>
   <item>Added real OpenRouter pricing for all light-tier and medium-tier models so cost reports reflect actual spend instead of DEFAULT_PRICING fallback.</item>
+  <item>RFC-0065: Added estimation warning block at top of Insights section when estimatedCalls > 0 — shows call counts, ±15% dollar range, and affected gogol names.</item>
 </CHANGE_SUMMARY>
 */
 
