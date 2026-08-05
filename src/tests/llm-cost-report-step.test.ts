@@ -76,7 +76,7 @@ function makeCtx(tmpRoot: string): LlmCostReportStepContext {
     getStepNumber: () => 99,
     getStepOutputDir: (id: string) => path.join(tmpRoot, id),
     getOutputPath: (id: string, n: string) => path.join(tmpRoot, id, n),
-    getStepArtifactPath: (id: string, a: string) => path.join(tmpRoot, id, "llm-cost-report.md"),
+    getStepArtifactPath: (id: string, _a: string) => path.join(tmpRoot, id, "llm-cost-report.md"),
     ensureOutputDir: async (dir: string) => {
       await fs.mkdir(dir, { recursive: true });
     },
