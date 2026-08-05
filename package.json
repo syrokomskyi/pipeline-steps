@@ -60,7 +60,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/better-sqlite3": "^9.6.0",
-    "@wgogol/changelog-live": "workspace:*",
+    "@warpgogol/changelog-live": "workspace:*",
     "axe-core": "^4.12.1",
     "chrome-launcher": "^1.2.1",
     "eslint": "~10.8.0",
