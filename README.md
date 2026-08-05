@@ -233,3 +233,7 @@ External CLI dependencies: `yt-dlp` (required for all functions), `whisper` (req
 - `@syrokomskyi/rate-limit` — `RateLimitedHttpStep` and `PlaywrightPooledStep` concurrency primitives (workspace dep, already in package.json)
 
 The root `pnpm-workspace.yaml` lists `better-sqlite3` in `onlyBuiltDependencies` so native builds happen once at install time.
+
+## Changelog
+
+[CHANGELOG.md](CHANGELOG.md)
