@@ -1,6 +1,28 @@
 # Changelog
 
 All notable changes to the `pipeline-steps` project are documented here.
+## 2026-07-30 .. 2026-08-05
+
+### Added
+- Add changelog links to all README.md files across packages and apps
+- Generate CHANGELOG.md files for all packages and apps
+- Add AGENTS.md documentation for agents across all packages and apps.
+
+### Changed
+- Rename @wgogol/changelog-live to @warpgogol/changelog-live in all relevant packages and documentation
+- Migrate forge dependency from @webgogol/forge to @warpgogol/forge.
+- Summarize HDRI audits by quarter.
+
+### Fixed
+- Add percentage display to LLM cost estimation warning text per RFC-0065 and update related tests
+- Downgrade TypeScript from 7.0.2 to 6.0.3 for compatibility with typescript-eslint.
+
+### Removed
+- Remove outdated entries from CHANGELOG.md files during regeneration.
+
+### Documentation
+- Update AGENTS.md files, documentation for RFC-0065, and rule sets in changelog.md.
+
 ## 2026-07-23 .. 2026-07-29
 
 ### Added
