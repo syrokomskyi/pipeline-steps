@@ -46,6 +46,7 @@ This is a **package** workspace. Expose stable typed APIs. Do not import from ap
 
 **External:**
 
+- `gray-matter` `^4.0.3`
 - `markdown-table` `^3.0.4`
 - `systeminformation` `^5.33.1`
 - `tslib` `^2.8.1`
