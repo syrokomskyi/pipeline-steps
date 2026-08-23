@@ -8,7 +8,6 @@
   </non-goals>
 </MODULE_CONTRACT>
 <CHANGE_SUMMARY>
-  <item>Initial creation of shared video extraction primitives: yt-dlp captions, metadata, audio download, and Whisper CLI transcription.</item>
   <item>Removed global regex g flag from VTT_TIMESTAMP_PATTERN to prevent stateful lastIndex false negatives in loop .test() calls.</item>
 </CHANGE_SUMMARY>
 */

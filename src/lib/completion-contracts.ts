@@ -1,6 +1,6 @@
 /*
 <MODULE_CONTRACT>
-<purpose>Define versioned human-decision and external-effect completion proofs.</purpose>
+<purpose>Define versioned human-decision and external-effect completion proofs. for reliable use by its direct callers and maintainers.</purpose>
 <non-goals>
   <item>Do not perform an external effect or choose a human decision.</item>
   <item>Do not determine artifact reuse independently of pipeline-core.</item>
