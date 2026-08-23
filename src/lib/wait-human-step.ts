@@ -14,7 +14,11 @@
 import path from "node:path";
 
 import { PipelinePauseError, PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineArtifacts, PipelineFingerprintContract, PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import type {
+  PipelineArtifacts,
+  PipelineFingerprintContract,
+  PipelineStepContext,
+} from "@syrokomskyi/pipeline-core";
 import matter from "gray-matter";
 
 export type WaitHumanStepMessageFactory = (options: { missingFileNames: string[] }) => string;
@@ -28,6 +32,7 @@ export type WaitHumanStepContext = PipelineStepContext & {
 export type WaitHumanStepOptions = {
   id: string;
   requiredOutputStepId?: string;
+  reviewedArtifacts?: Array<{ stepId: string; artifactId: string }>;
   requiredOutputFiles: string[];
   ensureNonEmptyFiles?: string[];
   forbiddenInclude?: {
@@ -56,6 +61,7 @@ export class WaitHumanStep<
   readonly id: string;
   readonly requiredOutputStepId?: string;
   readonly requiredOutputFiles: string[];
+  readonly reviewedArtifacts: Array<{ stepId: string; artifactId: string }>;
   readonly ensureNonEmptyFiles?: string[];
   override readonly artifacts: PipelineArtifacts<TContext>;
   override readonly retryPolicy = "none" as const;
@@ -75,13 +81,19 @@ export class WaitHumanStep<
       executionSemantics: "human_gate",
       completion: { kind: "human_decision", artifactId: decisionArtifactId },
       operationInputs: async (ctx) => [
-        ...await inherited.operationInputs(ctx),
+        ...(await inherited.operationInputs(ctx)),
+        ...this.reviewedArtifacts.map((artifact) => ({
+          kind: "upstream_artifact" as const,
+          stepId: artifact.stepId,
+          artifactId: artifact.artifactId,
+        })),
         {
           kind: "value",
           id: "human-gate-contract",
           value: {
             requiredOutputStepId: this.requiredOutputStepId ?? this.id,
             requiredOutputFiles: this.requiredOutputFiles,
+            reviewedArtifacts: this.reviewedArtifacts,
             ensureNonEmptyFiles: this.ensureNonEmptyFiles ?? [],
             forbiddenInclude: this.forbiddenInclude ?? null,
             message: typeof this.message === "string" ? this.message : this.message.toString(),
@@ -95,6 +107,7 @@ export class WaitHumanStep<
     super();
     this.id = options.id;
     this.requiredOutputStepId = options.requiredOutputStepId;
+    this.reviewedArtifacts = options.reviewedArtifacts ?? [];
     this.requiredOutputFiles = options.requiredOutputFiles;
     this.ensureNonEmptyFiles = options.ensureNonEmptyFiles;
     this.forbiddenInclude = options.forbiddenInclude;
@@ -129,7 +142,10 @@ export class WaitHumanStep<
       absolutePath: path.join(outputDir, normalizeRequiredOutputPath(relativePath)),
       kind: inferPathKind(relativePath),
     }));
-    const fingerprint = await ctx.resolveStepFingerprint?.({ stepId: this.id, fingerprint: this.fingerprint });
+    const fingerprint = await ctx.resolveStepFingerprint?.({
+      stepId: this.id,
+      fingerprint: this.fingerprint,
+    });
     if (!fingerprint) throw new Error(`Human gate ${this.id} requires fingerprint resolution`);
 
     await Promise.all(
@@ -145,11 +161,14 @@ export class WaitHumanStep<
 
         await ctx.writeTextFile(
           item.absolutePath,
-          matter.stringify("\n# Human decision\n\nReplace `TBD` with the decision and review note.\n", {
-            schema: "pipeline-human-decision@1",
-            reviewedFingerprint: fingerprint.dependencyFingerprint,
-            decision: "TBD",
-          }),
+          matter.stringify(
+            "\n# Human decision\n\nReplace `TBD` with the decision and review note.\n",
+            {
+              schema: "pipeline-human-decision@1",
+              reviewedFingerprint: fingerprint.dependencyFingerprint,
+              decision: "TBD",
+            },
+          ),
         );
       }),
     );
@@ -226,7 +245,10 @@ export class WaitHumanStep<
 
     const decisionPath = requiredItems[0]?.absolutePath;
     if (!decisionPath) fail();
-    const decisionFrontmatter = matter(await ctx.readTextFile(decisionPath)).data as Record<string, unknown>;
+    const decisionFrontmatter = matter(await ctx.readTextFile(decisionPath)).data as Record<
+      string,
+      unknown
+    >;
     if (
       decisionFrontmatter.schema !== "pipeline-human-decision@1" ||
       decisionFrontmatter.reviewedFingerprint !== fingerprint.dependencyFingerprint
