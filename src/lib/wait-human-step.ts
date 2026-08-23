@@ -58,7 +58,7 @@ export class WaitHumanStep<
   readonly ensureNonEmptyFiles?: string[];
   override readonly artifacts: PipelineArtifacts<TContext>;
   override readonly retryPolicy = "none" as const;
-  override readonly executionSemantics = "pure_artifact" as const;
+  override readonly executionSemantics = "human_gate" as const;
   readonly forbiddenInclude?: {
     sourceFileName: string;
     forbiddenFileName: string;
