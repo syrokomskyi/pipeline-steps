@@ -14,7 +14,8 @@
 import path from "node:path";
 
 import { PipelinePauseError, PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineArtifacts, PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import type { PipelineArtifacts, PipelineFingerprintContract, PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import matter from "gray-matter";
 
 export type WaitHumanStepMessageFactory = (options: { missingFileNames: string[] }) => string;
 
@@ -66,6 +67,30 @@ export class WaitHumanStep<
   readonly message: string | WaitHumanStepMessageFactory;
   readonly readmeFileName = "README.md";
 
+  override get fingerprint(): PipelineFingerprintContract<TContext> {
+    const inherited = super.fingerprint;
+    const decisionArtifactId = normalizeRequiredOutputPath(this.requiredOutputFiles[0] ?? "");
+    return {
+      ...inherited,
+      executionSemantics: "human_gate",
+      completion: { kind: "human_decision", artifactId: decisionArtifactId },
+      operationInputs: async (ctx) => [
+        ...await inherited.operationInputs(ctx),
+        {
+          kind: "value",
+          id: "human-gate-contract",
+          value: {
+            requiredOutputStepId: this.requiredOutputStepId ?? this.id,
+            requiredOutputFiles: this.requiredOutputFiles,
+            ensureNonEmptyFiles: this.ensureNonEmptyFiles ?? [],
+            forbiddenInclude: this.forbiddenInclude ?? null,
+            message: typeof this.message === "string" ? this.message : this.message.toString(),
+          },
+        },
+      ],
+    };
+  }
+
   constructor(options: WaitHumanStepOptions) {
     super();
     this.id = options.id;
@@ -104,6 +129,8 @@ export class WaitHumanStep<
       absolutePath: path.join(outputDir, normalizeRequiredOutputPath(relativePath)),
       kind: inferPathKind(relativePath),
     }));
+    const fingerprint = await ctx.resolveStepFingerprint?.({ stepId: this.id, fingerprint: this.fingerprint });
+    if (!fingerprint) throw new Error(`Human gate ${this.id} requires fingerprint resolution`);
 
     await Promise.all(
       requiredItems.map(async (item) => {
@@ -116,7 +143,14 @@ export class WaitHumanStep<
           return;
         }
 
-        await ctx.writeTextFile(item.absolutePath, "TBD");
+        await ctx.writeTextFile(
+          item.absolutePath,
+          matter.stringify("\n# Human decision\n\nReplace `TBD` with the decision and review note.\n", {
+            schema: "pipeline-human-decision@1",
+            reviewedFingerprint: fingerprint.dependencyFingerprint,
+            decision: "TBD",
+          }),
+        );
       }),
     );
 
@@ -171,6 +205,8 @@ export class WaitHumanStep<
       "",
       message,
       "",
+      `- Current reviewed fingerprint: \`${fingerprint.dependencyFingerprint}\``,
+      "",
       "## Notes",
       "",
       "- Files are pre-created with `TBD` when missing.",
@@ -185,6 +221,16 @@ export class WaitHumanStep<
     };
 
     if (missingPaths.length > 0) {
+      fail();
+    }
+
+    const decisionPath = requiredItems[0]?.absolutePath;
+    if (!decisionPath) fail();
+    const decisionFrontmatter = matter(await ctx.readTextFile(decisionPath)).data as Record<string, unknown>;
+    if (
+      decisionFrontmatter.schema !== "pipeline-human-decision@1" ||
+      decisionFrontmatter.reviewedFingerprint !== fingerprint.dependencyFingerprint
+    ) {
       fail();
     }
 

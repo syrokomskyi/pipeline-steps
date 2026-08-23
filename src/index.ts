@@ -21,6 +21,7 @@ export * from "./lib/signature-reporters.js";
 export * from "./lib/sign-source-step.js";
 export * from "./lib/verify-upstream-step.js";
 export * from "./lib/capture-environment-profile-step.js";
+export * from "./lib/completion-contracts.js";
 export * from "./lib/summarize-audit-step.js";
 export * from "./lib/llm-cost-report-step.js";
 export * from "./lib/video-extraction.js";
