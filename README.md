@@ -16,7 +16,7 @@ Reusable abstract **step base classes** extracted from recurring patterns across
 | …publishes data derived from human subjects (DSGVO) | **`KAnonymityGateStep`** | `enforceKAnonymity(ctx)` — warn or enforce with per-stratum report.json |
 | …signs a source DB file hash with the device ed25519 key | **`SignSourceStep`** | loads signing key from env, hashes DB, writes manifest + summary artifacts |
 | …verifies upstream device signatures before consuming DBs | **`VerifyUpstreamStep`** | loads transparency keys, enumerates device folders, verifies manifests + hashes |
-| …needs a synchronous manual signoff (codebook, Beirat) | **`WaitHumanStep`** | polls for an approval artifact, writes a pause marker |
+| …needs a synchronous manual signoff (codebook, Beirat) | **`WaitHumanStep`** | requires a decision artifact bound to the current reviewed fingerprint |
 | …stops the pipeline unconditionally until a human resumes it | **`PausePipelineStep`** | thin wrapper; no side effects beyond the pause marker |
 | …captures OS / Node / hardware / tool versions for audit reproducibility | **`CaptureEnvironmentProfileStep`** | system info via `systeminformation`, tool version probing, JSON + Markdown artifacts |
 | …generates an audit snapshot report with per-tool stats and DB hashes | **`SummarizeAuditStep<TStats>`** | generic over tool-specific stats; snapshot JSON + Markdown with SHA-256 integrity |
@@ -155,7 +155,7 @@ Artifacts written: `verify-upstream-summary.json`, `verify-upstream-summary.md`.
 
 ## `CaptureEnvironmentProfileStep` — usage
 
-Subclass and override `getBriefSnapshot(ctx)` to provide app-specific brief fields, and `getSkipGogols(ctx)` to wire the skip list. The base class owns the entire workflow: system info collection, tool version probing, JSON + Markdown artifact writing, and skip-if-exists logic.
+Subclass and override `getBriefSnapshot(ctx)` to provide app-specific brief fields, and `getSkipGogols(ctx)` to wire the skip list. The base class owns the entire workflow: system info collection, tool version probing, and JSON + Markdown artifact writing. Reuse is decided only by the shared manifest-backed lifecycle.
 
 ```ts
 export class CaptureEnvironmentProfileGogol extends CaptureEnvironmentProfileStep<PipelineContext> {
