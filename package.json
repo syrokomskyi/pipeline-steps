@@ -62,13 +62,13 @@
     "@eslint/js": "^10.0.1",
     "@types/better-sqlite3": "^9.6.0",
     "@warpgogol/changelog-live": "workspace:*",
-    "axe-core": "^4.12.1",
+    "axe-core": "^4.13.0",
     "chrome-launcher": "^1.2.1",
-    "eslint": "~10.8.0",
+    "eslint": "~10.9.0",
     "lighthouse": "^13.4.1",
     "playwright": "^1.62.1",
     "typescript": "6.0.3",
-    "typescript-eslint": "^8.66.0",
+    "typescript-eslint": "^8.67.0",
     "vitest": "4.1.10"
   }
 }
