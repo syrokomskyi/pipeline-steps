@@ -148,12 +148,6 @@ export class WaitHumanStep<
       absolutePath: path.join(outputDir, normalizeRequiredOutputPath(relativePath)),
       kind: inferPathKind(relativePath),
     }));
-    const fingerprint = await ctx.resolveStepFingerprint?.({
-      stepId: this.id,
-      fingerprint: this.fingerprint,
-    });
-    if (!fingerprint) throw new Error(`Human gate ${this.id} requires fingerprint resolution`);
-
     await Promise.all(
       requiredItems.map(async (item) => {
         if (item.kind === "dir") {
@@ -171,7 +165,6 @@ export class WaitHumanStep<
             "\n# Human decision\n\nSet the frontmatter `decision` to record your review.\n",
             {
               schema: "pipeline-human-decision@1",
-              reviewedFingerprint: fingerprint.dependencyFingerprint,
               decision: "TBD",
             },
           ),
@@ -231,8 +224,6 @@ export class WaitHumanStep<
       "",
       message,
       "",
-      `- Current reviewed fingerprint: \`${fingerprint.dependencyFingerprint}\``,
-      "",
       "## Notes",
       "",
       "- Files are pre-created with an unfinished decision when missing.",
@@ -256,10 +247,7 @@ export class WaitHumanStep<
       string,
       unknown
     >;
-    if (
-      decisionFrontmatter.schema !== "pipeline-human-decision@1" ||
-      decisionFrontmatter.reviewedFingerprint !== fingerprint.dependencyFingerprint
-    ) {
+    if (decisionFrontmatter.schema !== "pipeline-human-decision@1") {
       fail();
     }
 

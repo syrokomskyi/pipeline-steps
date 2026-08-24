@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 
 import { WaitHumanStep } from "../lib/wait-human-step.js";
 
-test("a human gate fingerprints every artifact it claims to review", async () => {
+test("a human gate declares every artifact it asks the operator to review", async () => {
   const step = new WaitHumanStep({
     id: "approve-dossier",
     reviewedArtifacts: [{ stepId: "editorial-dossier", artifactId: "dossier" }],
@@ -30,7 +30,6 @@ test("accepts a completed frontmatter decision despite instructional placeholder
       [
         "---",
         "schema: pipeline-human-decision@1",
-        "reviewedFingerprint: fingerprint",
         "decision: accepted",
         "---",
         "",
@@ -42,7 +41,6 @@ test("accepts a completed frontmatter decision despite instructional placeholder
   ]);
   const context = {
     getStepOutputDir: () => "/output",
-    resolveStepFingerprint: async () => ({ dependencyFingerprint: "fingerprint" }),
     fileExists: async (filePath: string) => files.has(filePath),
     readTextFile: async (filePath: string) => files.get(filePath) ?? "",
     writeTextFile: async (filePath: string, content: string) => {
