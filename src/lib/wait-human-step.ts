@@ -8,6 +8,7 @@
 </MODULE_CONTRACT>
 <CHANGE_SUMMARY>
   <item>Initial implementation of WaitHumanStep class for pipeline management.</item>
+  <item>Validate the decision field rather than instructional text in a human-decision document.</item>
 </CHANGE_SUMMARY>
 */
 
@@ -45,6 +46,11 @@ export type WaitHumanStepOptions = {
 const hasPlaceholder = (content: string): boolean => {
   const lower = content.toLowerCase();
   return lower.includes("tbd") || lower.includes("todo");
+};
+
+const hasIncompleteDecision = (content: string): boolean => {
+  const decision = matter(content).data.decision;
+  return typeof decision !== "string" || hasPlaceholder(decision);
 };
 
 const inferPathKind = (relativePath: string): "file" | "dir" => {
@@ -162,7 +168,7 @@ export class WaitHumanStep<
         await ctx.writeTextFile(
           item.absolutePath,
           matter.stringify(
-            "\n# Human decision\n\nReplace `TBD` with the decision and review note.\n",
+            "\n# Human decision\n\nSet the frontmatter `decision` to record your review.\n",
             {
               schema: "pipeline-human-decision@1",
               reviewedFingerprint: fingerprint.dependencyFingerprint,
@@ -181,7 +187,7 @@ export class WaitHumanStep<
     );
 
     const incompleteItems = await Promise.all(
-      readinessList.map(async (item) => {
+      readinessList.map(async (item, index) => {
         if (!item.exists || item.kind === "dir") {
           return {
             ...item,
@@ -191,7 +197,8 @@ export class WaitHumanStep<
         }
 
         const content = await ctx.readTextFile(item.absolutePath);
-        const hasFilePlaceholder = hasPlaceholder(content);
+        const hasFilePlaceholder =
+          index === 0 ? hasIncompleteDecision(content) : hasPlaceholder(content);
 
         return {
           ...item,
@@ -228,8 +235,8 @@ export class WaitHumanStep<
       "",
       "## Notes",
       "",
-      "- Files are pre-created with `TBD` when missing.",
-      "- Replace any `TBD` or `TODO` markers with the final content before re-running the pipeline.",
+      "- Files are pre-created with an unfinished decision when missing.",
+      "- Set the decision field to a final value before re-running the pipeline.",
     ].join("\n");
 
     await ctx.writeTextFile(readmePath, readme);
