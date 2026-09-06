@@ -1,0 +1,39 @@
+# extract.config.yaml — pipeline-steps standalone package export
+# RFC-0098: Publish pipeline SDK packages to NPM
+
+projectDir: packages/pipeline/pipeline-steps
+destName: pipeline-steps
+standalone: true
+
+workspacePrefixes:
+  - "@syrokomskyi/"
+  - "@warpgogol/"
+stripScopes:
+  - "@syrokomskyi/"
+  - "@warpgogol/"
+  - "@wgogol/"
+preservePackages: []
+packageManager: "pnpm"
+ignoreDirs:
+  - .output
+  - .debug
+  - .debug-public
+  - .astro
+  - spec
+  - .agents
+
+extraGitignore:
+  - .output
+  - .debug
+  - .debug-public
+
+postProcess:
+  - action: delete
+    path: AGENTS.md
+
+git:
+  remote: git@github.com:syrokomskyi/pipeline-steps.git
+  autoPush: true
+
+skipSecretScan: true
+versionBump: patch
