@@ -1,16 +1,28 @@
-/**
- * <MODULE_CONTRACT><purpose>Provide eslint config behavior for the packages pipeline pipeline-steps subsystem and its direct callers.</purpose><non-goals><item>Do not define unrelated cross-workspace policy or orchestration behavior.</item></non-goals></MODULE_CONTRACT>
- * <CHANGE_SUMMARY>
-  <item>Document the existing eslint.config module contract for Compass-aware maintenance.</item>
-</CHANGE_SUMMARY>
- */
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
 
-import baseConfig from "../../../eslint.config.mjs";
-
-export default [
-  ...baseConfig,
+export default tseslint.config(
   {
-    files: ["**/*.ts", "**/*.js"],
-    rules: {},
+    ignores: ["dist", "node_modules", "src/tests/**", "src/lib/tests/**"],
   },
-];
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    files: ["src/**/*.ts"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+    },
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
+);
