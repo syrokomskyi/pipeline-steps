@@ -1,6 +1,6 @@
 {
   "name": "@warpgogol/pipeline-steps",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": false,
   "type": "module",
   "repository": {
@@ -27,9 +27,12 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist", "!**/*.tsbuildinfo"],
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
   "dependencies": {
-    "@warpgogol/pipeline-core": "workspace:*",
+    "@warpgogol/pipeline-core": "*",
     "gray-matter": "^4.0.3",
     "markdown-table": "^3.0.4",
     "p-limit": "^6.2.0",
@@ -64,7 +67,6 @@
     "@eslint/js": "^10.0.1",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^22.10.0",
-    "@warpgogol/changelog-live": "workspace:*",
     "axe-core": "^4.13.0",
     "chrome-launcher": "^1.2.1",
     "eslint": "~10.9.0",
@@ -73,5 +75,6 @@
     "typescript": "6.0.3",
     "typescript-eslint": "^8.67.0",
     "vitest": "4.1.10"
-  }
+  },
+  "packageManager": "pnpm@11.20.0"
 }

@@ -1,0 +1,20 @@
+.env
+.env.*
+
+# Build outputs
+dist
+node_modules
+
+# Workspace
+.turbo
+
+# TypeScript
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+.output
+.debug
+.debug-public

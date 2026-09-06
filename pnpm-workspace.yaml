@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - '@warpgogol/pipeline-core@0.1.8'
