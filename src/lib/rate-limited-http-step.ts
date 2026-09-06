@@ -37,8 +37,8 @@
  *   }
  */
 
-import { PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import { PipelineStep } from "@warpgogol/pipeline-core";
+import type { PipelineStepContext } from "@warpgogol/pipeline-core";
 
 /** Minimal rate-limiter contract that any implementation can satisfy. */
 export type RateLimiterLike = {

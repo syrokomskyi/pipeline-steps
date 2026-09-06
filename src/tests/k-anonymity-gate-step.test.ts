@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { KAnonymityGateStep, DEFAULT_K_MIN, type Stratum } from "../lib/k-anonymity-gate-step.js";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import type { PipelineStepContext } from "@warpgogol/pipeline-core";
 import fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";

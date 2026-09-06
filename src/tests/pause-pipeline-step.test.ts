@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { PausePipelineStep } from "../lib/pause-pipeline-step.js";
-import { PipelinePauseError } from "@syrokomskyi/pipeline-core";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import { PipelinePauseError } from "@warpgogol/pipeline-core";
+import type { PipelineStepContext } from "@warpgogol/pipeline-core";
 
 function makeCtx(): PipelineStepContext {
   return {

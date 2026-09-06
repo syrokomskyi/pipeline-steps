@@ -14,12 +14,12 @@
 
 import path from "node:path";
 
-import { PipelinePauseError, PipelineStep } from "@syrokomskyi/pipeline-core";
+import { PipelinePauseError, PipelineStep } from "@warpgogol/pipeline-core";
 import type {
   PipelineArtifacts,
   PipelineFingerprintContract,
   PipelineStepContext,
-} from "@syrokomskyi/pipeline-core";
+} from "@warpgogol/pipeline-core";
 import matter from "gray-matter";
 
 export type WaitHumanStepMessageFactory = (options: { missingFileNames: string[] }) => string;

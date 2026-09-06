@@ -16,12 +16,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { PipelineStep } from "@syrokomskyi/pipeline-core";
+import { PipelineStep } from "@warpgogol/pipeline-core";
 import type {
   PipelineStepContext,
   PipelineArtifacts,
   TokenUsage,
-} from "@syrokomskyi/pipeline-core";
+} from "@warpgogol/pipeline-core";
 import { markdownTable } from "markdown-table";
 
 // ─── Pricing ───────────────────────────────────────────────────────────────

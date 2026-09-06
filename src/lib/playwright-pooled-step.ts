@@ -19,7 +19,7 @@
  * automatically after `run()` returns (or throws).
  *
  * Playwright is imported dynamically to avoid forcing the dependency on
- * every consumer of `@syrokomskyi/pipeline-steps`. Install `playwright` in the
+ * every consumer of `@warpgogol/pipeline-steps`. Install `playwright` in the
  * app that uses this step class.
  *
  * Extracted from Phase 6 (site-deep-audit AxeAuditGogol) per AGENTS.md
@@ -42,8 +42,8 @@
  */
 
 import pLimit from "p-limit";
-import { PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import { PipelineStep } from "@warpgogol/pipeline-core";
+import type { PipelineStepContext } from "@warpgogol/pipeline-core";
 
 // ---------------------------------------------------------------------------
 // Minimal Playwright type shims (keeps this package dependency-free at

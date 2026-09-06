@@ -17,8 +17,8 @@ import os from "node:os";
 import path from "node:path";
 import fsp from "node:fs/promises";
 import si from "systeminformation";
-import { PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import { PipelineStep } from "@warpgogol/pipeline-core";
+import type { PipelineStepContext } from "@warpgogol/pipeline-core";
 
 type ToolVersion = {
   name: string;

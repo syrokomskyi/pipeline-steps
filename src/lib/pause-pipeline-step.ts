@@ -11,8 +11,8 @@
 </CHANGE_SUMMARY>
 */
 
-import { PipelinePauseError, PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import { PipelinePauseError, PipelineStep } from "@warpgogol/pipeline-core";
+import type { PipelineStepContext } from "@warpgogol/pipeline-core";
 
 export class PausePipelineStep<
   TContext extends PipelineStepContext = PipelineStepContext,

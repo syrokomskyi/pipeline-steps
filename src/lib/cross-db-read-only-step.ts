@@ -43,8 +43,8 @@
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { createRequire } from "node:module";
-import { PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import { PipelineStep } from "@warpgogol/pipeline-core";
+import type { PipelineStepContext } from "@warpgogol/pipeline-core";
 
 // better-sqlite3 is a peer dependency: the app installs it, we import via
 // createRequire so this package stays install-light.

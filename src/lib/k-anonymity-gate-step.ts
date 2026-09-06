@@ -52,8 +52,8 @@
 
 import path from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
-import { PipelineStep } from "@syrokomskyi/pipeline-core";
-import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
+import { PipelineStep } from "@warpgogol/pipeline-core";
+import type { PipelineStepContext } from "@warpgogol/pipeline-core";
 
 /** Default minimum stratum size for public disclosure (governance §DSGVO). */
 export const DEFAULT_K_MIN = 5;
