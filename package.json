@@ -24,13 +24,8 @@
       "default": "./dist/index.js"
     }
   },
-  "files": [
-    "dist",
-    "!**/*.tsbuildinfo"
-  ],
+  "files": ["dist", "!**/*.tsbuildinfo"],
   "dependencies": {
-    "@syrokomskyi/business-core": "workspace:*",
-    "@syrokomskyi/observatory-crypto": "workspace:*",
     "@syrokomskyi/pipeline-core": "workspace:*",
     "@syrokomskyi/rate-limit": "workspace:*",
     "gray-matter": "^4.0.3",

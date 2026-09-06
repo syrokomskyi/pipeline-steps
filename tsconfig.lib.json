@@ -13,12 +13,6 @@
   "references": [
     {
       "path": "../pipeline-core/tsconfig.lib.json"
-    },
-    {
-      "path": "../../observatory/observatory-crypto/tsconfig.lib.json"
-    },
-    {
-      "path": "../../business/business-core/tsconfig.lib.json"
     }
   ]
 }
