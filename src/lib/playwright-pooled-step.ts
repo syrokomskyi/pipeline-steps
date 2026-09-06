@@ -41,9 +41,9 @@
  *   }
  */
 
+import pLimit from "p-limit";
 import { PipelineStep } from "@syrokomskyi/pipeline-core";
 import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
-import { ConcurrencyGate } from "@syrokomskyi/rate-limit";
 
 // ---------------------------------------------------------------------------
 // Minimal Playwright type shims (keeps this package dependency-free at
@@ -114,8 +114,8 @@ export abstract class PlaywrightPooledStep<
     browser: PlaywrightBrowser,
     fn: (page: PlaywrightPage) => Promise<T>,
   ): Promise<T> {
-    if (!this.#gate) this.#gate = new ConcurrencyGate(this.getPoolConcurrency());
-    return this.#gate.run(async () => {
+    if (!this.#limit) this.#limit = pLimit(this.getPoolConcurrency());
+    return this.#limit(async () => {
       const context = await browser.newContext();
       try {
         const page = await context.newPage();
@@ -130,5 +130,5 @@ export abstract class PlaywrightPooledStep<
     });
   }
 
-  #gate: ConcurrencyGate | null = null;
+  #limit: ReturnType<typeof pLimit> | null = null;
 }

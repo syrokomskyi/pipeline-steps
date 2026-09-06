@@ -1,14 +1,30 @@
 import { describe, it, expect } from "vitest";
-import { RateLimitedHttpStep } from "../lib/rate-limited-http-step.js";
-import type { RateLimiterOptions } from "@syrokomskyi/rate-limit";
+import { RateLimitedHttpStep, type RateLimiterLike } from "../lib/rate-limited-http-step.js";
 
 class TestHttpStep extends RateLimitedHttpStep {
   readonly id = "test-http";
-  protected getRateLimitOptions(): RateLimiterOptions {
+  protected createLimiter(): RateLimiterLike {
+    let active = 0;
+    let pending = 0;
+    const queue: Array<() => void> = [];
     return {
-      concurrency: 2,
-      bucket: { size: 5, refillPerSec: 10 },
-      retry: { retries: 2 },
+      schedule: async <T>(fn: () => Promise<T>): Promise<T> => {
+        if (active >= 2) {
+          pending++;
+          await new Promise<void>((resolve) => queue.push(resolve));
+          pending--;
+        }
+        active++;
+        try {
+          return await fn();
+        } finally {
+          active--;
+          const next = queue.shift();
+          if (next) next();
+        }
+      },
+      inFlight: () => active,
+      queueDepth: () => pending,
     };
   }
   async run(): Promise<void> {}

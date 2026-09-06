@@ -12,25 +12,21 @@
 */
 
 /**
- * RateLimitedHttpStep — abstract step with a built-in RateLimiter.
+ * RateLimitedHttpStep — abstract step with an injectable rate limiter.
  *
- * Wraps any outbound HTTP (or any async) call with token-bucket throttling,
- * concurrency gating, circuit breaking, and retry with backoff.
- *
- * This base class replaces the per-app pattern of instantiating a
- * RateLimiter in the gogol constructor and calling `rateLimiter.schedule(fn)`
- * for every outbound call. Instead, subclasses call `this.schedule(fn)`.
- *
- * Extracted from Phase 3 (site-profile) and Phase 6 (site-deep-audit)
- * duplicates per AGENTS.md anti-pattern rule.
+ * Subclasses provide a `RateLimiterLike` implementation via
+ * `createLimiter()`. This decouples the step from any specific
+ * rate-limiting library. HDRI apps typically use p-limit + p-retry +
+ * cockatiel; external consumers can use any implementation.
  *
  * Usage:
  *   class FetchPagesStep extends RateLimitedHttpStep<MyContext> {
- *     protected getRateLimitOptions() {
+ *     protected createLimiter(): RateLimiterLike {
+ *       const limit = pLimit(4);
  *       return {
- *         concurrency: 4,
- *         bucket: { capacity: 10, refillPerSec: 2 },
- *         retry: { maxAttempts: 3 },
+ *         schedule: (fn) => limit(fn),
+ *         inFlight: () => limit.activeCount,
+ *         queueDepth: () => limit.pendingCount,
  *       };
  *     }
  *     async run(ctx: MyContext): Promise<void> {
@@ -41,28 +37,34 @@
  *   }
  */
 
-import { RateLimiter, type RateLimiterOptions } from "@syrokomskyi/rate-limit";
 import { PipelineStep } from "@syrokomskyi/pipeline-core";
 import type { PipelineStepContext } from "@syrokomskyi/pipeline-core";
+
+/** Minimal rate-limiter contract that any implementation can satisfy. */
+export type RateLimiterLike = {
+  schedule<T>(fn: () => Promise<T>): Promise<T>;
+  inFlight(): number;
+  queueDepth(): number;
+};
 
 export abstract class RateLimitedHttpStep<
   TContext extends PipelineStepContext = PipelineStepContext,
 > extends PipelineStep<TContext> {
-  #limiter: RateLimiter | null = null;
+  #limiter: RateLimiterLike | null = null;
 
   /**
-   * Subclass must return the rate-limit configuration.
-   * Called once per step instance — the resulting RateLimiter is cached.
+   * Subclass must return a rate-limiter implementation.
+   * Called once per step instance — the result is cached.
    */
-  protected abstract getRateLimitOptions(): RateLimiterOptions;
+  protected abstract createLimiter(): RateLimiterLike;
 
   /**
-   * Run `fn` through the step's RateLimiter.
-   * All calls share the same bucket / gate / breaker / retry policy.
+   * Run `fn` through the step's rate limiter.
+   * All calls share the same limiter instance.
    */
   protected async schedule<T>(fn: () => Promise<T>): Promise<T> {
     if (!this.#limiter) {
-      this.#limiter = new RateLimiter(this.getRateLimitOptions());
+      this.#limiter = this.createLimiter();
     }
     return this.#limiter.schedule(fn);
   }
